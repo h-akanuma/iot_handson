@@ -3,6 +3,7 @@ GEM
   specs:
     eventmachine (1.0.9)
     ffi (1.9.18)
+    httpclient (2.8.3)
     pi_piper (2.0.0)
       eventmachine (= 1.0.9)
       ffi
@@ -11,6 +12,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  httpclient
   pi_piper
 
 BUNDLED WITH
