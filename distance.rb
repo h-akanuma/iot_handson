@@ -6,6 +6,7 @@ ECHO_GPIO = 27
 
 def read_distance(trig_pin, echo_pin)
   trig_pin.off
+  sleep(0.3)
 
   trig_pin.on
   sleep(0.00001)
@@ -19,13 +20,10 @@ def read_distance(trig_pin, echo_pin)
   end
 
   signal_on = signal_off
-  while Time.now < signal_off + 0.1
+  while echo_pin.on?
     echo_pin.read
-    if echo_pin.off?
-      signal_on = Time.now
-      break
-    end
   end
+  signal_on = Time.now
 
   time_passed = signal_on - signal_off
   distance = time_passed * 17_000
@@ -44,7 +42,7 @@ if $0 == __FILE__
       puts "Distance: %.1f cm" % distance
     end
 
-    wait = start_time + 1 - start_time
+    wait = start_time + 2 - Time.now
     sleep(wait) if wait > 0
   end
 end
