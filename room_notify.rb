@@ -9,7 +9,7 @@ BEAM_URL = 'http://beam.soracom.io:8888/room'
 TRIG_GPIO = 17
 ECHO_GPIO = 27
 LED_GPIO  = 18
-THRESHOLD = 40 # cm
+INTERVAL  = 5.0 # sec
 
 logger = Logger.new('room_notify.log')
 
@@ -18,9 +18,9 @@ led_pin  = PiPiper::Pin.new(pin: LED_GPIO,  direction: :out)
 occupied = false
 state_changed_at = Time.now
 
-interval = 5.0
+threshold = 50 # cm
 unless ARGV.empty?
-  interval = ARGV.first.to_f
+  threshold = ARGV.first.to_f
 end
 
 http_client = HTTPClient.new
@@ -28,7 +28,7 @@ loop do
   start_time = Time.now
   distance = read_distance(TRIG_GPIO, ECHO_GPIO)
 
-  current_status = distance < THRESHOLD
+  current_status = distance < threshold
   if occupied != current_status
     duration = Time.now - state_changed_at
     state_changed_at = Time.now
@@ -41,8 +41,8 @@ loop do
 
   occupied ? led_pin.on : led_pin.off
 
-  if Time.now < start_time + interval
-    sleep(start_time + interval - Time.now)
+  if Time.now < start_time + INTERVAL
+    sleep(start_time + INTERVAL - Time.now)
     next
   end
 end
