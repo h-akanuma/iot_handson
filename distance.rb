@@ -17,7 +17,6 @@ def read_distance(trig_pin_no, echo_pin_no)
   echo_pin.wait_for_change
   signal_off = Time.now
 
-  signal_on = signal_off
   echo_pin.wait_for_change
   signal_on = Time.now
 
