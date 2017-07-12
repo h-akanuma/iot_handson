@@ -5,15 +5,36 @@ require 'json'
 BEAM_URL = 'beam.soracom.io'
 TOPIC = '$aws/things/raspberry_pi/shadow/update'
 
-MQTT::Client.connect(host: BEAM_URL) do |client|
-  statement = {
+def statement(power)
+  {
     state: {
       desired: {
-        power: 'on'
+        power: power
       }
     }
   }
+end
 
-  client.publish(TOPIC, statement.to_json)
-  puts "Published to the topic: '#{TOPIC}'"
+def publish(client, power)
+  client.publish(TOPIC, statement(power).to_json)
+  puts "Published to the topic: '#{TOPIC}'. power: #{power}"
+end
+
+MQTT::Client.connect(host: BEAM_URL) do |client|
+  power = 'on'
+  publish(client, power)
+
+  sleep(3)
+
+  power = 'off'
+  publish(client, power)
+
+  sleep(3)
+
+  publish(client, power)
+
+  sleep(3)
+
+  power = 'on'
+  publish(client, power)
 end
