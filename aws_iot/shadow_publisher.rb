@@ -37,4 +37,6 @@ MQTT::Client.connect(host: BEAM_URL) do |client|
 
   power = 'on'
   publish(client, power)
+
+  sleep(3)
 end

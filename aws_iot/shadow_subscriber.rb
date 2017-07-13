@@ -6,22 +6,28 @@ BEAM_URL = 'beam.soracom.io'
 TOPIC = '$aws/things/raspberry_pi/shadow/update'
 DELTA_TOPIC = "#{TOPIC}/delta"
 
-MQTT::Client.connect(host: BEAM_URL) do |client|
-  initial_statement = {
+def statement(power)
+  {
     state: {
       reported: {
-        power: 'off'
+        power: power
       }
     }
   }
+end
 
-  client.publish(TOPIC, initial_statement.to_json)
-  puts "Published initial statement."
+MQTT::Client.connect(host: BEAM_URL) do |client|
+  power = 'off'
+  client.publish(TOPIC, statement(power).to_json)
+  puts "Published initial statement. power: #{power}"
 
   client.subscribe(DELTA_TOPIC)
   puts "Subscribed to the topic: #{DELTA_TOPIC}"
 
   client.get do |topic, json|
-    puts "#{topic}: #{JSON.parse(json)}"
+    power = JSON.parse(json)['state']['power']
+    client.publish(TOPIC, statement(power).to_json)
+    puts "Changed power state to: #{power}"
+    puts json
   end
 end
